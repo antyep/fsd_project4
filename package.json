@@ -1,5 +1,5 @@
 {
-  "name": "Backend_Tattoo_Project",
+  "name": "tattoo_backend_express_typeorm",
   "version": "1.0.0",
   "description": "none for now",
   "main": "dist/server.js",
