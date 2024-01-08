@@ -1,4 +1,4 @@
-import { Role } from "../models/Role";
+import { Role } from "../models/Roles";
 
 export const UserRoles = {
     ADMIN: { id= 1, name: "admin" }, as Role,
