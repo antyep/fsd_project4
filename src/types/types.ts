@@ -1,5 +1,6 @@
-// export interface CreateStudentRequestBody {
-    username: string;
+// export interface CreateStudentRequestBody 
+// Requiere cambio porque no usare "Students".
+{
     email: string;
     password: string;
     first_name: string;
