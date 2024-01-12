@@ -11,8 +11,8 @@ export const AppDataSource = new DataSource({
    host: "localhost",
    port: 3307,
    username: "root", //Cambio a datos correctos
-   password: "root", //Cambio a datos correctos
-   database: "backend_tattoo", //Cambio a datos correctos
+   password: "ReinodeIrlanda27250.", //Cambio a datos correctos
+   database: "project4-database-1", //Cambio a datos correctos
    entities: [`${__dirname}/../models/**/*{.js,.ts}`],
    migrations: [`${__dirname}/migrations/**/*{.js,.ts}`],
    // migrations: [

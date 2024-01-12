@@ -3,10 +3,13 @@ import {
     Column,
     Entity,
     JoinTable,
+    OneToOne,
     ManyToMany,
     PrimaryGeneratedColumn,
  } from "typeorm";
  import { Role } from "./Role";
+ import { Customer } from "./Customer";
+ import { Artist } from "./Artist";
  
  @Entity("users")
  export class User {
@@ -39,6 +42,12 @@ import {
 
     @Column()
     is_admin!: boolean
+
+   @OneToOne(() => Customer, (client: Customer) => client.user)
+   customer?: Customer;
+
+   @OneToOne(() => Artist, (artist) => artist.user)
+   artist?: Artist;
  }
 
 

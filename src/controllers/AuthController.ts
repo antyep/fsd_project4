@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import {
-   CreateStudentRequestBody,
+   CreateCustomerRequestBody,
    LoginUserRequestBody,
    TokenData,
 } from "../types/types";
@@ -8,7 +8,7 @@ import { User } from "../models/User";
 import bcrypt from "bcrypt";
 import { UserRoles } from "../constants/UserRoles";
 import { AppDataSource } from "../database/data-source";
-import { Student } from "../models/Student";
+import { Customer } from "../models/Customer";
 import { StatusCodes } from "http-status-codes";
 import jwt from "jsonwebtoken";
 
@@ -16,38 +16,37 @@ import jwt from "jsonwebtoken";
 
 export class AuthController {
    async register(
-      req: Request<{}, {}, CreateStudentRequestBody>,
+      req: Request<{}, {}, CreateCustomerRequestBody>,
       res: Response
    ): Promise<void | Response<any>> {
-      const { username, password, email, first_name, date_of_birth } = req.body;
+      const { username, password, email, date_of_birth } = req.body;
 
       const userRepository = AppDataSource.getRepository(User);
-      const studentRepository = AppDataSource.getRepository(Student);
+      const customerRepository = AppDataSource.getRepository(Customer);
 
       try {
          // Crear nuevo usuario
          const newUser: User = {
             username,
             email,
+            is_admin: false,
             password_hash: bcrypt.hashSync(password, 10),
-            roles: [UserRoles.STUDENT],
+            roles: [UserRoles.CUSTOMER],
          };
          await userRepository.save(newUser);
 
-         // Crear un estudiante
-         const newStudent: Student = {
-            user: newUser,
-            first_name,
-            date_of_birth: new Date(date_of_birth),
+         // Crear un customer
+         const newCustomer: Customer = {
+            user: newUser
          };
-         await studentRepository.save(newStudent);
+         await customerRepository.save(newCustomer);
 
          res.status(StatusCodes.CREATED).json({
-            message: "Student created successfully",
+            message: "Customer created successfully",
          });
       } catch (error) {
          res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: "Error while creating student",
+            message: "Error while creating Customer",
          });
       }
    }

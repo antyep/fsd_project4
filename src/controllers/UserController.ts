@@ -3,8 +3,6 @@ import { Request, Response } from "express";
 import { User } from "../models/User";
 import { AppDataSource } from "../database/data-source";
 
-// -----------------------------------------------------------------------------
-
 export class UserController implements Controller {
    async getAll(req: Request, res: Response): Promise<void | Response<any>> {
       try {

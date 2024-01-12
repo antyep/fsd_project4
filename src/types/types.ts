@@ -1,17 +1,10 @@
-// export interface CreateStudentRequestBody 
-// Requiere cambio porque no usare "Students".
-{
+export interface CreateCustomerRequestBody {
+   username: string;
     email: string;
     password: string;
-    first_name: string;
-    last_name: string;
-    date_of_birth: string;
-    address?: string;
-    phone_number?: string;
-    gender?: string;
-    nationality?: string;
+    date_of_birth: string;;
  }
- 
+
  export interface LoginUserRequestBody {
     email: string;
     password: string;

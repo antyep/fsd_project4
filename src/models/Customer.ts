@@ -3,20 +3,21 @@ import {
     Column,
     Entity,
     JoinTable,
-    JoinColumn,
-    OneToOne,
-    PrimaryGeneratedColumn,
+	OneToOne,
+	JoinColumn,
+    PrimaryGeneratedColumn
  } from "typeorm";
  import { Role } from "./Role";
  import { User } from "./User";
  
- @Entity("artists")
- export class Artist {
+ @Entity("customers")
+ export class Customer {
     @PrimaryGeneratedColumn()
     id?: number;
 
-   @OneToOne(() => User, (user) => user.artist)
-   @JoinColumn({ name: "user_id" })
-   user!: User;
+	@OneToOne(() => User, (user: User) => user.customer)
+	@JoinColumn({ name: "user_id" })
+	user!: User;
  }
+
 
