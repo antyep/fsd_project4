@@ -10,16 +10,5 @@ export class Role {
 	name!: string;
 
 	@ManyToMany(() => User, (user: User) => user.roles)
-	@JoinTable({
-		name: "roles",
-		joinColumn: {
-			name: "role_id",
-			referencedColumnName: "id",
-		},
-		inverseJoinColumn: {
-			name: "user_id",
-			referencedColumnName: "id",
-		},
-	})
 	users?: User[];
 }

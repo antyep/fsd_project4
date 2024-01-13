@@ -25,7 +25,6 @@ export class AuthController {
 			const newUser: User = {
 				username,
 				email,
-				is_admin: false,
 				password_hash: bcrypt.hashSync(password, 10),
 				roles: [UserRoles.CUSTOMER],
 			};

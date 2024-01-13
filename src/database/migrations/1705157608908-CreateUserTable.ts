@@ -30,11 +30,6 @@ export class CreateUserTable1705157608908 implements MigrationInterface {
 						length: "255",
 						isUnique: true,
 					},
-					{
-						name: "is_admin",
-						type: "boolean",
-						default: false,
-					},
 				],
 			}),
 			true
