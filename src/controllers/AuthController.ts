@@ -1,9 +1,5 @@
 import { Request, Response } from "express";
-import {
-   CreateCustomerRequestBody,
-   LoginUserRequestBody,
-   TokenData,
-} from "../types/types";
+import { CreateCustomerRequestBody, LoginUserRequestBody, TokenData } from "../types/types";
 import { User } from "../models/User";
 import bcrypt from "bcrypt";
 import { UserRoles } from "../constants/UserRoles";
@@ -15,115 +11,110 @@ import jwt from "jsonwebtoken";
 // -----------------------------------------------------------------------------
 
 export class AuthController {
-   async register(
-      req: Request<{}, {}, CreateCustomerRequestBody>,
-      res: Response
-   ): Promise<void | Response<any>> {
-      const { username, password, email, date_of_birth } = req.body;
+	async register(req: Request<{}, {}, CreateCustomerRequestBody>, res: Response): Promise<void | Response<any>> {
+		const { username, password, email } = req.body;
 
-      const userRepository = AppDataSource.getRepository(User);
-      const customerRepository = AppDataSource.getRepository(Customer);
+		console.log(req.body);
+		// Check if required fields are provided, if not throw error
 
-      try {
-         // Crear nuevo usuario
-         const newUser: User = {
-            username,
-            email,
-            is_admin: false,
-            password_hash: bcrypt.hashSync(password, 10),
-            roles: [UserRoles.CUSTOMER],
-         };
-         await userRepository.save(newUser);
+		const userRepository = AppDataSource.getRepository(User);
+		const customerRepository = AppDataSource.getRepository(Customer);
 
-         // Crear un customer
-         const newCustomer: Customer = {
-            user: newUser
-         };
-         await customerRepository.save(newCustomer);
+		try {
+			// Crear nuevo usuario
+			const newUser: User = {
+				username,
+				email,
+				is_admin: false,
+				password_hash: bcrypt.hashSync(password, 10),
+				roles: [UserRoles.CUSTOMER],
+			};
+			await userRepository.save(newUser);
 
-         res.status(StatusCodes.CREATED).json({
-            message: "Customer created successfully",
-         });
-      } catch (error) {
-         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: "Error while creating Customer",
-         });
-      }
-   }
+			// Crear un customer
+			const newCustomer: Customer = {
+				user: newUser,
+			};
+			await customerRepository.save(newCustomer);
 
-   async login(
-      req: Request<{}, {}, LoginUserRequestBody>,
-      res: Response
-   ): Promise<void | Response<any>> {
-      const { password, email } = req.body;
+			res.status(StatusCodes.CREATED).json({
+				message: "Customer created successfully",
+			});
+		} catch (error) {
+			console.log(error);
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				message: "Error while creating Customer",
+			});
+		}
+	}
 
-      const userRepository = AppDataSource.getRepository(User);
+	async login(req: Request<{}, {}, LoginUserRequestBody>, res: Response): Promise<void | Response<any>> {
+		const { password, email } = req.body;
 
-      try {
-         // Validar existencia de email y contraseña
-         if (!email || !password) {
-            return res.status(StatusCodes.BAD_REQUEST).json({
-               message: "Email or password is required",
-            });
-         }
+		const userRepository = AppDataSource.getRepository(User);
 
-         // Encontrar un usuario por email
-         const user = await userRepository.findOne({
-            where: {
-               email: email,
-            },
-            relations: {
-               roles: true,
-            },
-            select: {
-               roles: {
-                  name: true,
-               },
-            },
-         });
+		try {
+			// Validar existencia de email y contraseña
+			if (!email || !password) {
+				return res.status(StatusCodes.BAD_REQUEST).json({
+					message: "Email or password is required",
+				});
+			}
 
-         // Verificar usuario inexistente
-         if (!user) {
-            return res.status(StatusCodes.BAD_REQUEST).json({
-               message: "Bad email or password",
-            });
-         }
+			// Encontrar un usuario por email
+			const user = await userRepository.findOne({
+				where: {
+					email: email,
+				},
+				relations: {
+					roles: true,
+				},
+				select: {
+					roles: {
+						name: true,
+					},
+				},
+			});
 
-         // Verificar contraseña si el usuario existe
-         const isPasswordValid = bcrypt.compareSync(
-            password,
-            user.password_hash
-         );
+			// Verificar usuario inexistente
+			if (!user) {
+				return res.status(StatusCodes.BAD_REQUEST).json({
+					message: "Bad email or password",
+				});
+			}
 
-         // Verificar contraseña valida
-         if (!isPasswordValid) {
-            return res.status(StatusCodes.BAD_REQUEST).json({
-               message: "Bad email or password",
-            });
-         }
+			// Verificar contraseña si el usuario existe
+			const isPasswordValid = bcrypt.compareSync(password, user.password_hash);
 
-         // Generar token
+			// Verificar contraseña valida
+			if (!isPasswordValid) {
+				return res.status(StatusCodes.BAD_REQUEST).json({
+					message: "Bad email or password",
+				});
+			}
 
-         const roles = user.roles.map((role) => role.name);
+			// Generar token
 
-         const tokenPayload: TokenData = {
-            userId: user.id?.toString() as string,
-            userRoles: roles,
-         };
+			const roles = user.roles.map((role) => role.name);
 
-         const token = jwt.sign(tokenPayload, "123", {
-            expiresIn: "3h",
-         });
+			const tokenPayload: TokenData = {
+				userId: user.id?.toString() as string,
+				userRoles: roles,
+			};
 
-         res.status(StatusCodes.OK).json({
-            message: "Login successfully",
-            token,
-         });
-      } catch (error) {
-         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: "Error while login",
-            error,
-         });
-      }
-   }
+			const token = jwt.sign(tokenPayload, "123", {
+				expiresIn: "3h",
+			});
+
+			res.status(StatusCodes.OK).json({
+				message: "Login successfully",
+				token,
+			});
+		} catch (error) {
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				message: "Error while login",
+				error,
+			});
+		}
+	}
 }
