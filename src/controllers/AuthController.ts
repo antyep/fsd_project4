@@ -4,7 +4,6 @@ import { User } from "../models/User";
 import bcrypt from "bcrypt";
 import { UserRoles } from "../constants/UserRoles";
 import { AppDataSource } from "../database/data-source";
-import { Customer } from "../models/Customer";
 import { StatusCodes } from "http-status-codes";
 import jwt from "jsonwebtoken";
 
@@ -18,27 +17,18 @@ export class AuthController {
 		// Check if required fields are provided, if not throw error
 
 		const userRepository = AppDataSource.getRepository(User);
-		const customerRepository = AppDataSource.getRepository(Customer);
 
 		try {
 			// Crear nuevo usuario
-			const newUser: User = {
+			const newUser = userRepository.create({ 
 				username,
-				email,
-				password_hash: bcrypt.hashSync(password, 10),
-				roles: [UserRoles.CUSTOMER],
-			};
+				email, 
+				password_hash: bcrypt.hashSync(password, 10), 
+				roles: [UserRoles.CUSTOMER] 
+			 });
+			
 			await userRepository.save(newUser);
 
-			// Crear un customer
-			const newCustomer: Customer = {
-				user: newUser,
-			};
-			await customerRepository.save(newCustomer);
-
-			res.status(StatusCodes.CREATED).json({
-				message: "Customer created successfully",
-			});
 		} catch (error) {
 			console.log(error);
 			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

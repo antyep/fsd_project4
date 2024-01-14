@@ -1,6 +1,5 @@
 import { BaseEntity, Column, Entity, JoinTable, OneToOne, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Role } from "./Role";
-import { Customer } from "./Customer";
 import { Artist } from "./Artist";
 import { Appointment } from "./Appointment";
 
@@ -31,9 +30,6 @@ export class User {
 		},
 	})
 	roles!: Role[];
-
-	@OneToOne(() => Customer, (client: Customer) => client.user)
-	customer?: Customer;
 
 	@OneToOne(() => Artist, (artist) => artist.user)
 	artist?: Artist;
