@@ -2,6 +2,7 @@ import { BaseEntity, Column, Entity, JoinTable, OneToOne, ManyToMany, PrimaryGen
 import { Role } from "./Role";
 import { Customer } from "./Customer";
 import { Artist } from "./Artist";
+import { Appointment } from "./Appointment";
 
 @Entity("users")
 export class User {
@@ -36,4 +37,7 @@ export class User {
 
 	@OneToOne(() => Artist, (artist) => artist.user)
 	artist?: Artist;
+
+	@OneToOne(() => Appointment, (appointment) => appointment.user)
+	appointment?: Appointment;
 }
