@@ -2,6 +2,21 @@ import bcrypt from "bcrypt";
 import { UserRoles } from "../../constants/UserRoles";
 import { User } from "../../models/User";
 import { AppDataSource } from "../data-source";
+import { faker } from "@faker-js/faker";
+
+export function createRandomUser(): User {
+	return {
+	  id: faker.number.int({min: 50, max: 1000}),
+	  username: faker.internet.userName(),
+	  email: faker.internet.email(),
+	  password_hash: bcrypt.hashSync(faker.internet.password(), 10), 
+      roles: [UserRoles.CUSTOMER],
+	};
+  }
+  
+  export const USERS: User[] = faker.helpers.multiple(createRandomUser, {
+	count: 20,
+  });
 
 export const userSeeder = async () => {
 	try {
@@ -16,6 +31,8 @@ export const userSeeder = async () => {
 			roles: [UserRoles.ADMIN],
 		};
 		await userRepository.save(newUser);
+		await userRepository.save(USERS);
+
 
 		console.log("Seeding users successfully completed");
 	} catch (error) {
