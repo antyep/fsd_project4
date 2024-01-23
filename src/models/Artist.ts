@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import { Role } from "./Role";
 import { User } from "./User";
+import { Design } from "./Design";
 import { Appointment } from "./Appointment";
 
 @Entity("artists")
@@ -28,5 +29,9 @@ export class Artist {
       inverseJoinColumn: { name: "appointment_id", referencedColumnName: "id" },
   })
   appointments!: Appointment[];
+
+   // Relation so that Artist have many designs linked
+   @ManyToMany(() => Design, (design) => design.artist)
+   design?: Design[];
 }
 
