@@ -1,25 +1,23 @@
 import { Controller } from "./Controller";
 import { Request, Response } from "express";
-import { User } from "../models/User";
+import { Design } from "../models/Design";
 import { AppDataSource } from "../database/data-source";
 import { StatusCodes } from "http-status-codes";
 
-export class UserController implements Controller {
+export class DesignController implements Controller {
    async getAll(req: Request, res: Response): Promise<void | Response<any>> {
       try {
-         const userRepository = AppDataSource.getRepository(User);
+         const designRepository = AppDataSource.getRepository(Design);
 
          let { page, skip } = req.query;
 
          let currentPage = page ? +page : 1;
          let itemsPerPage = skip ? +skip : 10;
 
-         const [allUsers, count] = await userRepository.findAndCount({
+         const [allDesigns, count] = await designRepository.findAndCount({
             skip: (currentPage - 1) * itemsPerPage,
             take: itemsPerPage,
             select: {
-               username: true,
-               email: true,
                id: true,
             },
          });
@@ -27,11 +25,11 @@ export class UserController implements Controller {
             count,
             skip: itemsPerPage,
             page: currentPage,
-            results: allUsers,
+            results: allDesigns,
          });
       } catch (error) {
          res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: "Error while getting users",
+            message: "Error while getting appointments",
          });
       }
    }
@@ -40,21 +38,21 @@ export class UserController implements Controller {
       try {
          const id = +req.params.id;
 
-         const userRepository = AppDataSource.getRepository(User);
-         const user = await userRepository.findOneBy({
+         const designRepository = AppDataSource.getRepository(Design);
+         const design = await designRepository.findOneBy({
             id: id,
          });
 
-         if (!user) {
+         if (!design) {
             return res.status(StatusCodes.NOT_FOUND).json({
-               message: "User not found",
+               message: "Design not found",
             });
          }
 
-         res.status(StatusCodes.OK).json(user);
+         res.status(StatusCodes.OK).json(design);
       } catch (error) {
          res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: "Error while getting user",
+            message: "Error while getting design",
          });
       }
    }
@@ -63,12 +61,12 @@ export class UserController implements Controller {
       try {
          const data = req.body;
 
-         const userRepository = AppDataSource.getRepository(User);
-         const newUser = await userRepository.save(data);
+         const designRepository = AppDataSource.getRepository(Design);
+         const newUser = await designRepository.save(data);
          res.status(StatusCodes.CREATED).json(newUser);
       } catch (error) {
          res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: "Error while creating user",
+            message: "Error while creating design",
          });
       }
    }
@@ -78,15 +76,15 @@ export class UserController implements Controller {
          const id = +req.params.id;
          const data = req.body;
 
-         const userRepository = AppDataSource.getRepository(User);
-         await userRepository.update({ id: id }, data);
+         const designRepository = AppDataSource.getRepository(Design);
+         await designRepository.update({ id: id }, data);
 
          res.status(StatusCodes.ACCEPTED).json({
-            message: "User updated successfully",
+            message: "Design updated successfully",
          });
       } catch (error) {
          res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: "Error while updating user",
+            message: "Error while updating design",
          });
       }
    }
@@ -95,15 +93,15 @@ export class UserController implements Controller {
       try {
          const id = +req.params.id;
 
-         const userRepository = AppDataSource.getRepository(User);
-         await userRepository.delete(id);
+         const designRepository = AppDataSource.getRepository(Design);
+         await designRepository.delete(id);
 
          res.status(StatusCodes.OK).json({
-            message: "User deleted successfully",
+            message: "Design deleted successfully",
          });
       } catch (error) {
          res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: "Error while deleting user",
+            message: "Error while deleting design",
          });
       }
    }

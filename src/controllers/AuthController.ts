@@ -106,4 +106,66 @@ export class AuthController {
 			});
 		}
 	}
+
+	// async logout(req: Request, res: Response): Promise<void | Response<any>> {
+	// 	req.session.destroy();
+	// 	res.status(StatusCodes.OK).json({
+	// 		message: "Logout successfully",
+	// 	});
+	// }
+
+	async getProfile(req: Request, res: Response): Promise<void | Response<any>> {
+		const userId = req.tokenData?.userId;
+		const userRepository = AppDataSource.getRepository(User);
+
+		try {
+			const user = await userRepository.findOneBy({ id: Number(userId) });
+
+			if (!user) {
+				return res.status(StatusCodes.NOT_FOUND).json({
+					message: "User not found",
+				});
+			}
+
+			res.status(StatusCodes.OK).json({
+				user,
+			});
+		} catch (error) {
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				message: "Error while getting user profile",
+				error,
+			});
+		}
+	}
+
+	async updateProfile(req: Request, res: Response): Promise<void | Response<any>> {
+		const userId = req.tokenData?.userId;
+		const userRepository = AppDataSource.getRepository(User);
+		const { username, email, password } = req.body;
+
+		try {
+			const user = await userRepository.findOneBy({ id: Number(userId) });
+
+			if (!user) {
+				return res.status(StatusCodes.NOT_FOUND).json({
+					message: "User not found",
+				});
+			}
+
+			user.username = username;
+			user.email = email;
+			user.password_hash = bcrypt.hashSync(password, 10);
+
+			await userRepository.save(user);
+
+			res.status(StatusCodes.ACCEPTED).json({
+				message: "User updated successfully",
+			});
+		} catch (error) {
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				message: "Error while updating user profile",
+				error,
+			});
+		}
+	}
 }
