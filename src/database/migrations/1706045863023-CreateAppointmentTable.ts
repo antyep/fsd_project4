@@ -1,8 +1,7 @@
 import { MigrationInterface, QueryRunner, Table } from "typeorm";
 
 export class CreateAppointmentTable1706045863023 implements MigrationInterface {
-
-    public async up(queryRunner: QueryRunner): Promise<void> {
+	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.createTable(
 			new Table({
 				name: "appointments",
@@ -16,32 +15,31 @@ export class CreateAppointmentTable1706045863023 implements MigrationInterface {
 					},
 					{
 						name: "date",
-						type: "varchar",
+						type: "datetime",
+					},
+					{
+						name: "user_id",
+						type: "int",
 						length: "255",
 					},
-                    {
-                        name: "user_id",
-                        type: "int",
-                        length: "255",
-                    },
-                    {
-                        name: "artist_id",
-                        type: "int",
-                        length: "255",
-                    }
+					{
+						name: "artist_id",
+						type: "int",
+						length: "255",
+					},
 				],
-                foreignKeys: [
-                    {
-                        columnNames: ["user_id"],
-                        referencedTableName: "users",
-                        referencedColumnNames: ["id"],
-                    },
-                    {
-                        columnNames: ["artist_id"],
-                        referencedTableName: "artists",
-                        referencedColumnNames: ["id"],
-                    },
-                ]
+				foreignKeys: [
+					{
+						columnNames: ["user_id"],
+						referencedTableName: "users",
+						referencedColumnNames: ["id"],
+					},
+					{
+						columnNames: ["artist_id"],
+						referencedTableName: "artists",
+						referencedColumnNames: ["id"],
+					},
+				],
 			}),
 			true
 		);

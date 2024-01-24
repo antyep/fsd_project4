@@ -108,7 +108,7 @@ export class UserController implements Controller {
 
 			// @todo: delete users in cascade. this is throwing error because of that
 
-			await userRepository.delete(user);
+			// await userRepository.delete(user);
 
 			res.status(StatusCodes.OK).json({
 				message: "User deleted successfully",
