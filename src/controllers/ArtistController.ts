@@ -3,106 +3,121 @@ import { Request, Response } from "express";
 import { Artist } from "../models/Artist";
 import { AppDataSource } from "../database/data-source";
 import { StatusCodes } from "http-status-codes";
+import { User } from "../models/User";
+import { UserRoles } from "../constants/UserRoles";
 
 export class ArtistController implements Controller {
-   async getAll(req: Request, res: Response): Promise<void | Response<any>> {
-      try {
-         const artistRepository = AppDataSource.getRepository(Artist);
+	async getAll(req: Request, res: Response): Promise<void | Response<any>> {
+		try {
+			const artistRepository = AppDataSource.getRepository(Artist);
 
-         let { page, skip } = req.query;
+			let { page, skip } = req.query;
 
-         let currentPage = page ? +page : 1;
-         let itemsPerPage = skip ? +skip : 10;
+			let currentPage = page ? +page : 1;
+			let itemsPerPage = skip ? +skip : 10;
 
-         const [allArtists, count] = await artistRepository.findAndCount({
-            skip: (currentPage - 1) * itemsPerPage,
-            take: itemsPerPage,
-            select: {
-               id: true,
-            },
-         });
-         res.status(StatusCodes.OK).json({
-            count,
-            skip: itemsPerPage,
-            page: currentPage,
-            results: allArtists,
-         });
-      } catch (error) {
-         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: "Error while getting artist",
-         });
-      }
-   }
+			const [allArtists, count] = await artistRepository.findAndCount({
+				skip: (currentPage - 1) * itemsPerPage,
+				take: itemsPerPage,
+				select: {
+					id: true,
+					name: true,
+				},
+			});
+			res.status(StatusCodes.OK).json({
+				count,
+				skip: itemsPerPage,
+				page: currentPage,
+				results: allArtists,
+			});
+		} catch (error) {
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				message: "Error while getting artist",
+			});
+		}
+	}
 
-   async getById(req: Request, res: Response): Promise<void | Response<any>> {
-      try {
-         const id = +req.params.id;
+	async getById(req: Request, res: Response): Promise<void | Response<any>> {
+		try {
+			const id = +req.params.id;
 
-         const artistRepository = AppDataSource.getRepository(Artist);
-         const artist = await artistRepository.findOneBy({
-            id: id,
-         });
+			const artistRepository = AppDataSource.getRepository(Artist);
+			const artist = await artistRepository.findOneBy({
+				id: id,
+			});
 
-         if (!artist) {
-            return res.status(StatusCodes.NOT_FOUND).json({
-               message: "Artist not found",
-            });
-         }
+			if (!artist) {
+				return res.status(StatusCodes.NOT_FOUND).json({
+					message: "Artist not found",
+				});
+			}
 
-         res.status(StatusCodes.OK).json(artist);
-      } catch (error) {
-         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: "Error while getting artist",
-         });
-      }
-   }
+			res.status(StatusCodes.OK).json(artist);
+		} catch (error) {
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				message: "Error while getting artist",
+			});
+		}
+	}
 
-   async create(req: Request, res: Response): Promise<void | Response<any>> {
-      try {
-         const data = req.body;
+	async create(req: Request, res: Response): Promise<void | Response<any>> {
+		try {
+			const { user_id, name } = req.body;
 
-         const artistRepository = AppDataSource.getRepository(Artist);
-         const newUser = await artistRepository.save(data);
-         res.status(StatusCodes.CREATED).json(newUser);
-      } catch (error) {
-         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: "Error while creating artist",
-         });
-      }
-   }
+			const userRepository = AppDataSource.getRepository(User);
+			const user = await userRepository.findOneBy({ id: user_id });
+			if (!user) {
+				return res.status(StatusCodes.NOT_FOUND).json({
+					message: "User not found",
+				});
+			}
 
-   async update(req: Request, res: Response): Promise<void | Response<any>> {
-      try {
-         const id = +req.params.id;
-         const data = req.body;
+			const artistRepository = AppDataSource.getRepository(Artist);
+			const newArtist = await artistRepository.save({ user: user, name: name });
+			// https://stackoverflow.com/a/57432772
+			await userRepository.createQueryBuilder().relation(User, "roles").of(user).add(UserRoles.ARTIST.id);
 
-         const artistRepository = AppDataSource.getRepository(Artist);
-         await artistRepository.update({ id: id }, data);
+			res.status(StatusCodes.CREATED).json(newArtist);
+		} catch (error) {
+			console.error(error);
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				message: "Error while creating artist",
+			});
+		}
+	}
 
-         res.status(StatusCodes.ACCEPTED).json({
-            message: "Artist updated successfully",
-         });
-      } catch (error) {
-         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: "Error while updating artist",
-         });
-      }
-   }
+	async update(req: Request, res: Response): Promise<void | Response<any>> {
+		try {
+			const id = +req.params.id;
+			const data = req.body;
 
-   async delete(req: Request, res: Response): Promise<void | Response<any>> {
-      try {
-         const id = +req.params.id;
+			const artistRepository = AppDataSource.getRepository(Artist);
+			await artistRepository.update({ id: id }, data);
 
-         const artistRepository = AppDataSource.getRepository(Artist);
-         await artistRepository.delete(id);
+			res.status(StatusCodes.ACCEPTED).json({
+				message: "Artist updated successfully",
+			});
+		} catch (error) {
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				message: "Error while updating artist",
+			});
+		}
+	}
 
-         res.status(StatusCodes.OK).json({
-            message: "Artist deleted successfully",
-         });
-      } catch (error) {
-         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: "Error while deleting artist",
-         });
-      }
-   }
+	async delete(req: Request, res: Response): Promise<void | Response<any>> {
+		try {
+			const id = +req.params.id;
+
+			const artistRepository = AppDataSource.getRepository(Artist);
+			await artistRepository.delete(id);
+
+			res.status(StatusCodes.OK).json({
+				message: "Artist deleted successfully",
+			});
+		} catch (error) {
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				message: "Error while deleting artist",
+			});
+		}
+	}
 }

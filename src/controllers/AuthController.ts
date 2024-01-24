@@ -20,15 +20,18 @@ export class AuthController {
 
 		try {
 			// Crear nuevo usuario
-			const newUser = userRepository.create({ 
+			const newUser = userRepository.create({
 				username,
-				email, 
-				password_hash: bcrypt.hashSync(password, 10), 
-				roles: [UserRoles.CUSTOMER] 
-			 });
-			
+				email,
+				password_hash: bcrypt.hashSync(password, 10),
+				roles: [UserRoles.CUSTOMER],
+			});
+
 			await userRepository.save(newUser);
 
+			res.status(StatusCodes.CREATED).json({
+				message: "Customer created successfully",
+			});
 		} catch (error) {
 			console.log(error);
 			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -121,6 +124,8 @@ export class AuthController {
 		try {
 			const user = await userRepository.findOneBy({ id: Number(userId) });
 
+			// @todo: dont send password_hash to the client
+
 			if (!user) {
 				return res.status(StatusCodes.NOT_FOUND).json({
 					message: "User not found",
@@ -154,6 +159,7 @@ export class AuthController {
 
 			user.username = username;
 			user.email = email;
+			// @todo: dont allow password change so easily. maybe another route
 			user.password_hash = bcrypt.hashSync(password, 10);
 
 			await userRepository.save(user);

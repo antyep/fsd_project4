@@ -1,6 +1,5 @@
 import express from "express";
 import { UserController } from "../controllers/UserController";
-import { sampleMiddleware } from "../middlewares/sampleMiddleware";
 import { auth } from "../middlewares/auth";
 import { isAdmin } from "../middlewares/isAdmin";
 
@@ -17,6 +16,6 @@ router.post("/", auth, isAdmin, userController.create);
 
 router.patch("/:id", auth, isAdmin, userController.update);
 
-router.delete("/:id", auth, isAdmin, userController.delete); 
+router.delete("/:id", auth, isAdmin, userController.delete);
 
 export default router;

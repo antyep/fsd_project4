@@ -6,17 +6,17 @@ import { faker } from "@faker-js/faker";
 
 export function createRandomUser(): User {
 	return {
-	  id: faker.number.int({min: 50, max: 10000}),
-	  username: faker.internet.userName(),
-	  email: faker.internet.email(),
-	  password_hash: bcrypt.hashSync(faker.internet.password(), 10), 
-      roles: [UserRoles.CUSTOMER],
+		id: faker.number.int({ min: 50, max: 10000 }),
+		username: faker.internet.userName(),
+		email: faker.internet.email(),
+		password_hash: bcrypt.hashSync(faker.internet.password(), 10),
+		roles: [UserRoles.CUSTOMER],
 	};
-  }
-  
-  export const USERS: User[] = faker.helpers.multiple(createRandomUser, {
+}
+
+export const USERS: User[] = faker.helpers.multiple(createRandomUser, {
 	count: 20,
-  });
+});
 
 export const userSeeder = async () => {
 	try {
@@ -26,13 +26,12 @@ export const userSeeder = async () => {
 
 		const newUser: User = {
 			username: "admin",
-			email: "miau@gmail.com",
+			email: "admin@email.com",
 			password_hash: bcrypt.hashSync("root", 10),
 			roles: [UserRoles.ADMIN],
 		};
 		await userRepository.save(newUser);
 		await userRepository.save(USERS);
-
 
 		console.log("Seeding users successfully completed");
 	} catch (error) {

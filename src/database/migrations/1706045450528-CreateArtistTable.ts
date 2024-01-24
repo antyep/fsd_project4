@@ -1,8 +1,7 @@
 import { MigrationInterface, QueryRunner, Table } from "typeorm";
 
 export class CreateArtistTable1706045450528 implements MigrationInterface {
-
-    public async up(queryRunner: QueryRunner): Promise<void> {
+	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.createTable(
 			new Table({
 				name: "artists",
@@ -26,13 +25,13 @@ export class CreateArtistTable1706045450528 implements MigrationInterface {
 						length: "255",
 					},
 				],
-                foreignKeys: [
-                    {
-                        columnNames: ["user_id"],
-                        referencedTableName: "users",
-                        referencedColumnNames: ["id"],
-                    },
-                ]
+				foreignKeys: [
+					{
+						columnNames: ["user_id"],
+						referencedTableName: "users",
+						referencedColumnNames: ["id"],
+					},
+				],
 			}),
 			true
 		);
