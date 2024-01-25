@@ -3,31 +3,24 @@ import { Request, Response } from "express";
 import { User } from "../models/User";
 import { AppDataSource } from "../database/data-source";
 import { StatusCodes } from "http-status-codes";
+import { paginateAndFetch } from "../utils/paginateAndFetch";
 
 export class UserController implements Controller {
 	async getAll(req: Request, res: Response): Promise<void | Response<any>> {
 		try {
 			const userRepository = AppDataSource.getRepository(User);
 
-			let { page, skip } = req.query;
+			const { results, count, skip, page } = await paginateAndFetch(userRepository, req.query, { select: {
+				username: true,
+				email: true,
+				id: true,
+			}})
 
-			let currentPage = page ? +page : 1;
-			let itemsPerPage = skip ? +skip : 10;
-
-			const [allUsers, count] = await userRepository.findAndCount({
-				skip: (currentPage - 1) * itemsPerPage,
-				take: itemsPerPage,
-				select: {
-					username: true,
-					email: true,
-					id: true,
-				},
-			});
 			res.status(StatusCodes.OK).json({
+				results,
 				count,
-				skip: itemsPerPage,
-				page: currentPage,
-				results: allUsers,
+				skip,
+				page
 			});
 		} catch (error) {
 			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

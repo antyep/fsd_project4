@@ -5,30 +5,72 @@ import { User } from "../models/User";
 import { AppDataSource } from "../database/data-source";
 import { StatusCodes } from "http-status-codes";
 import { Artist } from "../models/Artist";
+import { paginateAndFetch } from "../utils/paginateAndFetch";
+import { error } from "console";
 
 export class AppointmentController implements Controller {
 	async getAll(req: Request, res: Response): Promise<void | Response<any>> {
 		try {
 			const appointmentRepository = AppDataSource.getRepository(Appointment);
 
-			let { page, skip } = req.query;
+			const { results, count, skip, page } = await paginateAndFetch(appointmentRepository, req.query, { 
+				select: { id: true },
+			})
 
-			let currentPage = page ? +page : 1;
-			let itemsPerPage = skip ? +skip : 10;
+			res.status(StatusCodes.OK).json({ count, skip, page, results });
+		} catch (error) {
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				message: "Error while getting appointments",
+			});
+		}
+	}
 
-			const [allAppointments, count] = await appointmentRepository.findAndCount({
-				skip: (currentPage - 1) * itemsPerPage,
-				take: itemsPerPage,
-				select: {
-					id: true,
-				},
+	async getUserAppointments(req: Request, res: Response): Promise<void | Response<any>> {
+		try {
+			const userId = req.tokenData?.userId;
+			const userRepository = AppDataSource.getRepository(User);
+
+			const user = await userRepository.findOneBy({ id: Number(userId) });
+			if (!user) {
+				return res.status(StatusCodes.NOT_FOUND).json({
+					message: "User not found",
+				});
+			}
+
+			const appointmentRepository = AppDataSource.getRepository(Appointment);
+
+			const { results, count, skip, page } = await paginateAndFetch(appointmentRepository, req.query, { 
+				select: { id: true },
+				where: { user }
+			})
+
+			res.status(StatusCodes.OK).json({ count, skip, page, results });
+		} catch (error) {
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				message: "Error while getting appointments",
 			});
-			res.status(StatusCodes.OK).json({
-				count,
-				skip: itemsPerPage,
-				page: currentPage,
-				results: allAppointments,
+		}
+	}
+
+	async getArtistAppointments(req: Request, res: Response): Promise<void | Response<any>> {
+		try {
+			const userId = req.tokenData?.userId;
+
+		const artistRepository = AppDataSource.getRepository(Artist);
+		const artist = await artistRepository.findOneBy({ user: { id: Number(userId) } });
+		if (!artist) {
+			return res.status(StatusCodes.NOT_FOUND).json({
+				message: "Artist not found",
 			});
+		}
+
+		const appointmentRepository = AppDataSource.getRepository(Appointment);
+		const { results, count, skip, page } = await paginateAndFetch(appointmentRepository, req.query, { 
+			select: { id: true },
+			where: { artist }
+		})
+
+		res.status(StatusCodes.OK).json({ count, skip, page, results });
 		} catch (error) {
 			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 				message: "Error while getting appointments",
@@ -61,9 +103,9 @@ export class AppointmentController implements Controller {
 
 	async create(req: Request, res: Response): Promise<void | Response<any>> {
 		try {
-			// @todo check user from tokens instead of body
 			const userId = req.tokenData?.userId;
 			const { artist_id, datetime } = req.body;
+			console.log(error);
 
 			const appointmentRepository = AppDataSource.getRepository(Appointment);
 			const userRepository = AppDataSource.getRepository(User);
@@ -140,31 +182,13 @@ export class AppointmentController implements Controller {
 
 			if (user) {
 				const appointmentRepository = AppDataSource.getRepository(Appointment);
-
-				let { page, skip } = req.query;
-
-				let currentPage = page ? +page : 1;
-				let itemsPerPage = skip ? +skip : 10;
-
-				const [appointments, count] = await appointmentRepository.findAndCount({
-					skip: (currentPage - 1) * itemsPerPage,
-					take: itemsPerPage,
+				const { results, count, skip, page } = await paginateAndFetch(appointmentRepository, req.query, { 
 					where: {
 						user: user,
-					},
-				});
-
-				if (!appointments) {
-					return res.status(StatusCodes.NOT_FOUND).json({
-						message: "Appointments not found",
-					});
-				}
-				res.status(StatusCodes.OK).json({
-					count,
-					skip: itemsPerPage,
-					page: currentPage,
-					results: appointments,
-				});
+					}
+				})
+	
+				res.status(StatusCodes.OK).json({ count, skip, page, results });
 			} else {
 				res.status(StatusCodes.NOT_FOUND).json({
 					message: "User not found",

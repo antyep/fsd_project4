@@ -3,30 +3,27 @@ import { Request, Response } from "express";
 import { Design } from "../models/Design";
 import { AppDataSource } from "../database/data-source";
 import { StatusCodes } from "http-status-codes";
+import { paginateAndFetch } from "../utils/paginateAndFetch";
 
 export class DesignController implements Controller {
    async getAll(req: Request, res: Response): Promise<void | Response<any>> {
       try {
          const designRepository = AppDataSource.getRepository(Design);
-
-         let { page, skip } = req.query;
-
-         let currentPage = page ? +page : 1;
-         let itemsPerPage = skip ? +skip : 10;
-
-         const [allDesigns, count] = await designRepository.findAndCount({
-            skip: (currentPage - 1) * itemsPerPage,
-            take: itemsPerPage,
-            select: {
+         
+         const { results, count, skip, page } = await paginateAndFetch(designRepository, req.query, {
+				select: {
                id: true,
-            },
-         });
-         res.status(StatusCodes.OK).json({
-            count,
-            skip: itemsPerPage,
-            page: currentPage,
-            results: allDesigns,
-         });
+            }
+			})
+
+			res.status(StatusCodes.OK).json({
+				count,
+				skip,
+				page,
+				results
+				
+			});
+
       } catch (error) {
          res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             message: "Error while getting appointments",

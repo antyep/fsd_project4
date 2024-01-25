@@ -5,30 +5,26 @@ import { AppDataSource } from "../database/data-source";
 import { StatusCodes } from "http-status-codes";
 import { User } from "../models/User";
 import { UserRoles } from "../constants/UserRoles";
+import { paginateAndFetch } from "../utils/paginateAndFetch";
 
 export class ArtistController implements Controller {
 	async getAll(req: Request, res: Response): Promise<void | Response<any>> {
 		try {
 			const artistRepository = AppDataSource.getRepository(Artist);
-
-			let { page, skip } = req.query;
-
-			let currentPage = page ? +page : 1;
-			let itemsPerPage = skip ? +skip : 10;
-
-			const [allArtists, count] = await artistRepository.findAndCount({
-				skip: (currentPage - 1) * itemsPerPage,
-				take: itemsPerPage,
+			
+			const { results, count, skip, page } = await paginateAndFetch(artistRepository, req.query, {
 				select: {
 					id: true,
 					name: true,
-				},
-			});
+				}
+			})
+
 			res.status(StatusCodes.OK).json({
 				count,
-				skip: itemsPerPage,
-				page: currentPage,
-				results: allArtists,
+				skip,
+				page,
+				results
+				
 			});
 		} catch (error) {
 			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
