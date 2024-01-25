@@ -4,6 +4,18 @@ Admin user:
 	Password: root
 	Email: admin@email.com
 
+Customer user
+
+	Username: customer
+	Password: root
+	Email: customer@email.com
+
+Artist user
+
+	Username: artist
+	Password: root
+	Email: artist@email.com
+
 Todo:
 
 DONE - register
@@ -19,8 +31,8 @@ DONE - create appointment
 DONE - edit appointments TODO: EXTRA CHECK IF USER IS THE OWNER OF THE APPOINTMENT
 DONE - delete appointment TODO: EXTRA CHECK IF USER IS THE OWNER OF THE APPOINTMENT
 
-- consult our appointments for users
-- consult our appointments for artists
+DONE - consult our appointments for users
+DONE - consult our appointments for artists
 
 
 DONE - see all users 
