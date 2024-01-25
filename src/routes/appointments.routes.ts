@@ -6,10 +6,13 @@ const router = express.Router();
 const appointmentController = new AppointmentController();
 
 router.post("/", auth, appointmentController.create);
-router.delete("/:id", auth, appointmentController.delete);
-router.put("/:id", auth, appointmentController.update);
 
-// @todo: fix this routes behaviour. also add one for artist
-router.get("/myappointments", auth, appointmentController.getByUserId);
+router.get("/", auth, appointmentController.getUserAppointments)
+router.get("/artist", auth, appointmentController.getArtistAppointments);
+
+router.get("/:id", auth, appointmentController.getById);
+
+router.put("/:id", auth, appointmentController.update);
+router.delete("/:id", auth, appointmentController.delete);
 
 export default router;
