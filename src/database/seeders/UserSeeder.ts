@@ -3,6 +3,7 @@ import { UserRoles } from "../../constants/UserRoles";
 import { User } from "../../models/User";
 import { AppDataSource } from "../data-source";
 import { faker } from "@faker-js/faker";
+import { TestUsers } from "./TestUsers";
 
 export function createRandomUser(): User {
 	return {
@@ -23,13 +24,8 @@ export const userSeeder = async () => {
 		await AppDataSource.initialize();
 		const userRepository = AppDataSource.getRepository(User);
 
-		const newUser: User = {
-			username: "admin",
-			email: "admin@email.com",
-			password_hash: bcrypt.hashSync("root", 10),
-			roles: [UserRoles.ADMIN],
-		};
-		await userRepository.save(newUser);
+
+		await userRepository.save(TestUsers);
 		await userRepository.save(USERS);
 
 		console.log("Seeding users successfully completed");

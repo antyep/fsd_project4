@@ -1,5 +1,7 @@
 import { roleSeeder } from "./RoleSeeder";
 import { userSeeder } from "./UserSeeder";
+import { artistSeeder } from "./ArtistSeeder";
+import { appointmentSeeder } from "./AppointmentSeeder";
 
 (async () => {
 	console.log("-----------------------------------------------");
@@ -8,6 +10,8 @@ import { userSeeder } from "./UserSeeder";
 
 	await roleSeeder();
 	await userSeeder();
+	await artistSeeder();
+	await appointmentSeeder()
 
 	console.log("-----------------------------------------------");
 })();
