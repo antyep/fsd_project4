@@ -17,7 +17,7 @@ Chosen topic was Tattoo Studio or shop, where the user could create appointments
 
    
 ## Database Schema:
-![Schema](./schema.png)
+![schema](https://github.com/kxlde/fsd_project4/assets/147875916/5d15415e-e761-49d7-841a-3cfa4d81a83d)
 
 ## Installation:
 
