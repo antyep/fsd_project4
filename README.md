@@ -17,7 +17,7 @@ Chosen topic was Tattoo Studio or shop, where the user could create appointments
 
    
 ## Database Schema:
-![Schema](./schema.png/schema.png)
+![Schema](./schema.png)
 
 ## Installation:
 
