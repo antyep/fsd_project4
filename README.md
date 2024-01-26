@@ -6,7 +6,7 @@
 
 This project required a functional API connected through a MySQL database.
 
-Chosen topic was Tattoo Studio or shop, where the user could create appointments  with an admin user who could modify, create and handle users. 
+Chosen topic was Tattoo Studio or shop, where the user could create appointments with an admin user who could modify, create and handle users. 
 
 ## Stack or Tooling:
 
