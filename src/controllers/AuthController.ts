@@ -7,19 +7,15 @@ import { AppDataSource } from "../database/data-source";
 import { StatusCodes } from "http-status-codes";
 import jwt from "jsonwebtoken";
 
-// -----------------------------------------------------------------------------
-
 export class AuthController {
 	async register(req: Request<{}, {}, CreateCustomerRequestBody>, res: Response): Promise<void | Response<any>> {
 		const { username, password, email } = req.body;
 
 		console.log(req.body);
-		// Check if required fields are provided, if not throw error
 
 		const userRepository = AppDataSource.getRepository(User);
 
 		try {
-			// Crear nuevo usuario
 			const newUser = userRepository.create({
 				username,
 				email,
@@ -46,14 +42,12 @@ export class AuthController {
 		const userRepository = AppDataSource.getRepository(User);
 
 		try {
-			// Validar existencia de email y contraseña
 			if (!email || !password) {
 				return res.status(StatusCodes.BAD_REQUEST).json({
 					message: "Email or password is required",
 				});
 			}
 
-			// Encontrar un usuario por email
 			const user = await userRepository.findOne({
 				where: {
 					email: email,
@@ -68,24 +62,19 @@ export class AuthController {
 				},
 			});
 
-			// Verificar usuario inexistente
 			if (!user) {
 				return res.status(StatusCodes.BAD_REQUEST).json({
 					message: "Bad email or password",
 				});
 			}
 
-			// Verificar contraseña si el usuario existe
 			const isPasswordValid = bcrypt.compareSync(password, user.password_hash);
 
-			// Verificar contraseña valida
 			if (!isPasswordValid) {
 				return res.status(StatusCodes.BAD_REQUEST).json({
 					message: "Bad email or password",
 				});
 			}
-
-			// Generar token
 
 			const roles = user.roles.map((role) => role.name);
 
@@ -110,21 +99,12 @@ export class AuthController {
 		}
 	}
 
-	// async logout(req: Request, res: Response): Promise<void | Response<any>> {
-	// 	req.session.destroy();
-	// 	res.status(StatusCodes.OK).json({
-	// 		message: "Logout successfully",
-	// 	});
-	// }
-
 	async getProfile(req: Request, res: Response): Promise<void | Response<any>> {
 		const userId = req.tokenData?.userId;
 		const userRepository = AppDataSource.getRepository(User);
 
 		try {
 			const user = await userRepository.findOneBy({ id: Number(userId) });
-
-			// @todo: dont send password_hash to the client
 
 			if (!user) {
 				return res.status(StatusCodes.NOT_FOUND).json({
@@ -159,7 +139,6 @@ export class AuthController {
 
 			user.username = username;
 			user.email = email;
-			// @todo: dont allow password change so easily. maybe another route
 			user.password_hash = bcrypt.hashSync(password, 10);
 
 			await userRepository.save(user);

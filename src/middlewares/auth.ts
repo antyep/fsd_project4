@@ -3,8 +3,6 @@ import { StatusCodes } from "http-status-codes";
 import jwt, { JwtPayload, decode } from "jsonwebtoken";
 import { TokenData } from "../types/types";
 
-// -----------------------------------------------------------------------------
-
 export const auth = (req: Request, res: Response, next: NextFunction) => {
 	req.headers;
 
@@ -17,10 +15,8 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
 	}
 
 	try {
-		// Decodificar el token
 		const decoded = jwt.verify(token, "123") as JwtPayload;
 
-		// Modificar el objeto Request con los datos del payload
 		const decodedPayload: TokenData = {
 			userId: decoded.userId,
 			userRoles: decoded.userRoles,

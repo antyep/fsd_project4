@@ -5,14 +5,6 @@ import { AppDataSource } from "../data-source";
 import { faker } from "@faker-js/faker";
 import { customerUser, artistUser } from "./TestUsers";
 
-// export function createRandomAppointment(user: User, artist: Artist): Appointment {
-//     return {
-//         date: faker.date.future(),
-//         artist: artist,
-//         user: user,
-//     };
-// }
-
 export const appointmentSeeder = async () => {
     try {
         console.log("🔵 Seeding appointments...");
