@@ -11,13 +11,13 @@ Chosen topic was Tattoo Studio or shop, where the user could create appointments
 ## Stack or Tooling:
 
 - TypeScript.
-- TypeOrm.
+- TypeORM.
 - Express.
 - NodeJS.
 
    
 ## Database Schema:
-<p><img src="/schema.png" width="100%" height="100%"/></p>
+<p><img src="./schema.png" width="100%" height="100%"/></p>
 
 ## Installation:
 
@@ -159,7 +159,7 @@ Customer user:
 
 ## License
 
-My personal license.
+My personal license, but Apache License is being used to simulate a standard license with its full text license.
 
 ## Documentation used
 
