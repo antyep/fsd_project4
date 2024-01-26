@@ -1,44 +1,172 @@
-Admin user:
 
-	Username: admin
-	Password: root
-	Email: admin@email.com
-
-Customer user
-
-	Username: customer
-	Password: root
-	Email: customer@email.com
-
-Artist user
-
-	Username: artist
-	Password: root
-	Email: artist@email.com
-
-Todo:
-
-DONE - register
-DONE - login
-DONE - profile
-DONE - profile edit
-
-DONE - artist create (as admin)
-DONE - artist retrieve
+# API Rest - Backend Tattoo Studio
 
 
-DONE - create appointment 
-DONE - edit appointments TODO: EXTRA CHECK IF USER IS THE OWNER OF THE APPOINTMENT
-DONE - delete appointment TODO: EXTRA CHECK IF USER IS THE OWNER OF THE APPOINTMENT
+# Target
 
-DONE - consult our appointments for users
-DONE - consult our appointments for artists
+This project required a functional API connected through a MySQL database.
+
+Chosen topic was Tattoo Studio or shop, where the user could create appointments  with an admin user who could modify, create and handle users. 
+
+## Stack or Tooling:
+
+- TypeScript.
+- TypeOrm.
+- Express.
+- NodeJS.
+
+   
+## Database Schema:
+<img src="schema.png" alt="db-schema"/>
 
 
-DONE - see all users 
+## Installation:
 
-extras
-- Ver una cita en detalle (EXTRA)
-- El super_admin debe otorgar roles a los usuarios del sistema(EXTRA)
-● Validar la fecha de la cita(EXTRA)
-● Añadir tipos de intervención (tattoo / piercing ) a las citas (EXTRA)
+### Local installation:
+
+    1. Clone the repository by using: 'git clone 'https://github.com/kxlde/fsd_project3.git' in the terminal.
+    2. Install the node modules by typing: 'npm i' or 'npm install'
+    3. To run the server, type 'npm run dev' in the terminal. (You firstly need to have docker installed and running otherwise it will not get started)
+    4. To refresh the server run: 'npm run db:refresh' in the terminal it will drop, seed and start the server.
+
+## Endpoints:
+
+#### To register 📃
+
+    POST localhost:3000/api/auth/register
+
+ #### Body:
+
+    {
+    "username": "username",
+    "password": "password",
+    "email": "email@email.com"
+    }
+
+#### To login 🔓
+
+    POST localhost:3000/api/auth/login
+
+  #### Body:
+
+    {
+    "email": "email@email.com",
+    "password": "password"
+    }
+
+### Interest users ✨
+
+ Admin user:
+
+    {
+    "username": "admin",
+    "email": "root",
+    "password": "admin@email.com"
+    }
+
+Artist user:
+
+    {
+    "username": "artist",
+    "email": "root",
+    "password": "artist@email.com"
+    }
+
+Customer user:
+
+    {
+    "username": "customer",
+    "email": "root",
+    "password": "customer@email.com"
+    }
+
+#### To update a profile ✏
+
+    PUT localhost:3000/api/auth/profile
+
+    User token is required.
+
+ #### Body:
+
+    {
+    "username": "juan",
+    "email": "juan@email.com",
+    "password": "4321"
+    }
+
+#### To watch your profile 👀
+
+    GET localhost:3000/api/auth/profile
+
+    User token is required.
+
+#### To watch all artists 🎨
+
+    GET localhost:3000/api/auth/artists/
+
+
+### Create appointments 📑
+
+    POST localhost:3000/api/appointments
+
+    User token is required.
+
+ #### Body:
+
+    {
+    "artist_id": "ID",
+    "date": "YYYY-MM-DD HH-MM-SS"
+    }
+
+### Delete appointment ❌
+
+    DELETE localhost:3000/api/appointments/2
+
+    User token is required.
+
+### Check my appointments (as Customer)😀
+
+    GET localhost:3000/api/appointments
+
+    User token is required.
+
+### Check my appointments (as Artist)😎
+
+    GET localhost:3000/api/artist  
+
+    Artist token is required.
+
+### As admin👑:
+
+### Create artist✔
+
+    POST localhost:3000/api/artists/
+
+ #### Body:
+
+    {
+    "user_id": "ID",
+    "name": "artistic_name",
+    }
+
+### List all users👨‍👨‍👧‍👧
+
+    GET localhost:3000/api/users/
+
+### Delete user🚩
+
+    DELETE localhost:3000/api/:id
+
+
+## License
+
+My personal license.
+
+## Documentation used
+
+- https://typeorm.io/
+- https://nodejs.org/docs/latest/api/
+- https://expressjs.com/
+- https://learning.postman.com/docs/introduction/overview/
+- https://dbeaver.com/docs/dbeaver/
+- https://docs.docker.com/
