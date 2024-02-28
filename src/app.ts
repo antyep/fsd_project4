@@ -7,4 +7,8 @@ app.use(express.json());
 
 app.use(router);
 
+app.get('/api', (req, res) => {
+    res.send('kd api')
+  })
+
 export default app;
