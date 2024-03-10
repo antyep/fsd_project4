@@ -40,8 +40,16 @@ export class AppointmentController implements Controller {
 			const appointmentRepository = AppDataSource.getRepository(Appointment);
 
 			const { results, count, skip, page } = await paginateAndFetch(appointmentRepository, req.query, { 
-				select: { id: true },
-				where: { user }
+				select: { id: true, date: true },
+				where: { user },
+				relations: {
+					user: true,
+					artist: true
+				},
+				order: {
+					date: 'ASC'
+				}
+				
 			})
 
 			res.status(StatusCodes.OK).json({ count, skip, page, results });
@@ -66,8 +74,15 @@ export class AppointmentController implements Controller {
 
 		const appointmentRepository = AppDataSource.getRepository(Appointment);
 		const { results, count, skip, page } = await paginateAndFetch(appointmentRepository, req.query, { 
-			select: { id: true },
-			where: { artist }
+			select: { id: true, date: true },
+			where: { artist },
+			relations: {
+				user: true,
+				artist: true
+			},
+			order: {
+				date: 'ASC'
+			}
 		})
 
 		res.status(StatusCodes.OK).json({ count, skip, page, results });
