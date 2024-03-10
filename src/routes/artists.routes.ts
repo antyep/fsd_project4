@@ -10,7 +10,7 @@ const artistController = new ArtistController();
 
 router.get("/", artistController.getAll);
 
-router.get("/:id", auth, isAdmin, artistController.getById);
+router.get("/:id", artistController.getById);
 
 router.post("/", auth, isAdmin, artistController.create);
 
