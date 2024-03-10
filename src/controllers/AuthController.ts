@@ -11,11 +11,24 @@ export class AuthController {
 	async register(req: Request<{}, {}, CreateCustomerRequestBody>, res: Response): Promise<void | Response<any>> {
 		const { username, password, email } = req.body;
 
-		console.log(req.body);
-
 		const userRepository = AppDataSource.getRepository(User);
 
 		try {
+			if (!username || !password || !email) {
+				return res.status(StatusCodes.BAD_REQUEST).json({
+					message: "Missing data in request",
+				});
+			}
+
+			const userByEmail = await userRepository.findOne({ where: { email: email, } });
+			const userByUsername = await userRepository.findOne({ where: { email: email, } });
+
+			if (userByEmail || userByUsername) {
+				return res.status(StatusCodes.CONFLICT).json({
+					message: "Username or email already exists.",
+				});
+			}
+
 			const newUser = userRepository.create({
 				username,
 				email,
@@ -43,7 +56,7 @@ export class AuthController {
 
 		try {
 			if (!email || !password) {
-				return res.status(StatusCodes.BAD_REQUEST).json({
+				return res.status(StatusCodes.UNAUTHORIZED).json({
 					message: "Email or password is required",
 				});
 			}
@@ -63,7 +76,7 @@ export class AuthController {
 			});
 
 			if (!user) {
-				return res.status(StatusCodes.BAD_REQUEST).json({
+				return res.status(StatusCodes.UNAUTHORIZED).json({
 					message: "Bad email or password",
 				});
 			}
@@ -71,7 +84,7 @@ export class AuthController {
 			const isPasswordValid = bcrypt.compareSync(password, user.password_hash);
 
 			if (!isPasswordValid) {
-				return res.status(StatusCodes.BAD_REQUEST).json({
+				return res.status(StatusCodes.UNAUTHORIZED).json({
 					message: "Bad email or password",
 				});
 			}
@@ -93,7 +106,7 @@ export class AuthController {
 			});
 		} catch (error) {
 			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-				message: "Error while login",
+				message: "Internal error while login",
 				error,
 			});
 		}
@@ -126,7 +139,7 @@ export class AuthController {
 	async updateProfile(req: Request, res: Response): Promise<void | Response<any>> {
 		const userId = req.tokenData?.userId;
 		const userRepository = AppDataSource.getRepository(User);
-		const { username, email, password } = req.body;
+		const { username, email } = req.body;
 
 		try {
 			const user = await userRepository.findOneBy({ id: Number(userId) });
@@ -139,7 +152,6 @@ export class AuthController {
 
 			user.username = username;
 			user.email = email;
-			user.password_hash = bcrypt.hashSync(password, 10);
 
 			await userRepository.save(user);
 
