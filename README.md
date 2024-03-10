@@ -59,24 +59,24 @@ Chosen topic was Tattoo Studio or shop, where the user could create appointments
 
     {
     "username": "admin",
-    "email": "root",
-    "password": "admin@email.com"
+    "email": "admin@email.com",
+    "password": "root"
     }
 
 Artist user:
 
     {
     "username": "artist",
-    "email": "root",
-    "password": "artist@email.com"
+    "email": "artist@email.com",
+    "password": "root"
     }
 
 Customer user:
 
     {
     "username": "customer",
-    "email": "root",
-    "password": "customer@email.com"
+    "email": "customer@email.com",
+    "password": "root"
     }
 
 #### To update a profile ✏
