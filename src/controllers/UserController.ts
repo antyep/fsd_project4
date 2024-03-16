@@ -88,8 +88,6 @@ export class UserController implements Controller {
 		try {
 			const id = +req.params.id;
 
-			console.log("id", id);
-
 			const userRepository = AppDataSource.getRepository(User);
 			const user = await userRepository.findOneBy({ id: id });
 
@@ -98,6 +96,7 @@ export class UserController implements Controller {
 					message: "User not found",
 				});
 			}
+			await userRepository.remove(user);
 			res.status(StatusCodes.OK).json({
 				message: "User deleted successfully",
 			});
